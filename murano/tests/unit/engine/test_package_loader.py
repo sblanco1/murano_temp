@@ -145,7 +145,6 @@ class TestPackageCache(base.MuranoTestCase):
         self.assertTrue(os.path.isfile(os.path.join(
             self.location, fqn, package.version, third_id, 'manifest.yaml')))
 
-
 class TestCombinedPackageLoader(base.MuranoTestCase):
     @classmethod
     def setUpClass(cls):
@@ -194,3 +193,4 @@ class TestCombinedPackageLoader(base.MuranoTestCase):
 
         self.api_loader.load_class_package.assert_called_with(
             self.api_pkg_name, spec)
+

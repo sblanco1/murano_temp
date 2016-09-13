@@ -19,7 +19,7 @@ from oslo_serialization import jsonutils
 from murano.api.v1 import environments
 from murano.api.v1 import sessions
 import murano.tests.unit.api.base as tb
-
+from webob import exc
 
 class TestSessionsApi(tb.ControllerTest, tb.MuranoApiTestCase):
     def setUp(self):
@@ -82,3 +82,92 @@ class TestSessionsApi(tb.ControllerTest, tb.MuranoApiTestCase):
 
         # Should be forbidden!
         self.assertEqual(403, response.status_code)
+
+    def test_session_show(self):
+        CREDENTIALS_1 = {'tenant': 'test_tenant_1', 'user': 'test_user_1'}
+	CREDENTIALS_2 = {'tenant': 'test_tenant_2', 'user': 'test_user_2'}
+
+        self._set_policy_rules(
+            {'create_environment': '@'}
+        )
+        self.expect_policy_check('create_environment')
+
+        # Create environment for user #1
+        request = self._post(
+            '/environments',
+            jsonutils.dump_as_bytes({'name': 'test_environment_1'}),
+            **CREDENTIALS_1
+        )
+        response_body = jsonutils.loads(request.get_response(self.api).body)
+        self.assertEqual(CREDENTIALS_1['tenant'],
+                         response_body['tenant_id'])
+
+        ENVIRONMENT_ID = response_body['id']
+
+        # Create session of user #1
+        request = self._post(
+            '/environments/{environment_id}/configure'
+            .format(environment_id=ENVIRONMENT_ID),
+            b'',
+            **CREDENTIALS_1
+        )
+        response_body = jsonutils.loads(request.get_response(self.api).body)
+
+        SESSION_ID = response_body['id']
+	
+	request = self._get(
+            '/environments/{environment_id}/sessions/{session_id}'
+            .format(environment_id=ENVIRONMENT_ID, session_id=SESSION_ID),
+            b'',
+            **CREDENTIALS_1
+        )
+        response_body = jsonutils.loads(request.get_response(self.api).body)
+	self.assertEquals(SESSION_ID, response_body['id'])
+
+	request = self._get(
+            '/environments/{environment_id}/sessions/{session_id}'
+            .format(environment_id=ENVIRONMENT_ID, session_id=SESSION_ID),
+            b'',
+            **CREDENTIALS_2
+        )
+        response = request.get_response(self.api)
+        self.assertEqual(403, response.status_code)
+
+    def test_session_delete(self):
+        CREDENTIALS_1 = {'tenant': 'test_tenant_1', 'user': 'test_user_1'}
+
+        self._set_policy_rules(
+            {'create_environment': '@'}
+        )
+        self.expect_policy_check('create_environment')
+
+        # Create environment for user #1
+        request = self._post(
+            '/environments',
+            jsonutils.dump_as_bytes({'name': 'test_environment_1'}),
+            **CREDENTIALS_1
+        )
+        response_body = jsonutils.loads(request.get_response(self.api).body)
+        self.assertEqual(CREDENTIALS_1['tenant'],
+                         response_body['tenant_id'])
+
+        ENVIRONMENT_ID = response_body['id']
+
+        # Create session of user #1
+        request = self._post(
+            '/environments/{environment_id}/configure'
+            .format(environment_id=ENVIRONMENT_ID),
+            b'',
+            **CREDENTIALS_1
+        )
+        response_body = jsonutils.loads(request.get_response(self.api).body)
+
+        SESSION_ID = response_body['id']
+
+        request = self._delete(
+            '/environments/{environment_id}/delete/{session_id}'
+            .format(environment_id=ENVIRONMENT_ID, session_id=SESSION_ID),
+            b'',
+            **CREDENTIALS_1
+        )
+        response = self.sessions_controller.delete(request, ENVIRONMENT_ID, SESSION_ID)
