@@ -1,4 +1,4 @@
-#    Copyright (c) 2015 Telefonica I+D
+#    Copyright (c) 2016 AT&T
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
