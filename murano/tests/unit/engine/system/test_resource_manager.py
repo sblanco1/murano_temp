@@ -31,6 +31,10 @@ from murano.tests.unit import base
 class TestResourceManager(base.MuranoTestCase):
     def setUp(self):
         super(TestResourceManager, self).setUp()
+        self.mock_subscriber = mock.MagicMock(spec=murano_object.MuranoObject)
+        self.mock_subscriber.type = self.mock_class
+        self.mock_subscriber.object_id = "12"
+
         self.yaml_loader = yamllib.SafeLoader
 
         self.addCleanup(mock.patch.stopall)
@@ -38,11 +42,17 @@ class TestResourceManager(base.MuranoTestCase):
     @mock.patch("murano.dsl.helpers.get_caller_context")
     @mock.patch("murano.dsl.helpers.get_type")
     def test_init(self, context_type, caller_context):
-        self.resource_manager = resource_manager.ResourceManager(context_type)
+        context_type.return_value = self.mock_subscriber
+        murano_class = context_type
+        r_m = resource_manager.ResourceManager(context_type)
+        self.assertEqual(r_m._package, murano_class.package)
 
     @mock.patch("murano.dsl.helpers.get_caller_context")
     @mock.patch("murano.dsl.helpers.get_type")
     def test_get_package_none_owner(self, context_type, caller_context):
+        context_type.return_value = self.mock_subscriber
         owner = None
         receiver = None
-        resource_manager.ResourceManager._get_package(owner, receiver)
+        murano_class = context_type
+        r_m = resource_manager.ResourceManager._get_package(owner, receiver)
+        self.assertEqual(r_m._get_package(owner, receiver), murano_class.package)
