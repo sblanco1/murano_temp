@@ -54,8 +54,10 @@ class TestMistralClient(base.MuranoTestCase):
     def test_run(self):
         run_name = 'test'
         timeout = 0
+        inputs = None
+        params = None
         mc = workflowclient.MistralClient(self._this, 'regionOne')
-        mc.run(run_name, timeout)
+        self.assertEqual(mc.run(run_name, timeout), mc.MistralClient.run.execution.id)
 
     def test_upload(self):
         mc = workflowclient.MistralClient(self._this, 'regionOne')
