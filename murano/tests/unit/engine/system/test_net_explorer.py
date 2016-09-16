@@ -38,7 +38,6 @@ class TestNetExplorer(base.MuranoTestCase):
         super(TestNetExplorer, self).setUp()
         self.mock_class = mock.MagicMock(spec=murano_type.MuranoClass)
         self.mock_method = mock.MagicMock(spec=murano_method.MuranoMethod)
-        self.mock_object_store = mock.Mock(spec=object_store.ObjectStore)
 
         self.nclient_mock = mock.Mock()
         self._this = mock.MagicMock()
@@ -49,10 +48,7 @@ class TestNetExplorer(base.MuranoTestCase):
     @mock.patch("murano.dsl.helpers.get_execution_session")
     def test_init(self, execution_session):
         region_name = "regionOne"
-        execution_session.return_value = self.mock_object_store
         ne = net_explorer.NetworkExplorer(self._this, region_name)
-        self.assertEqual(ne._project_id, execution.session.project_id)
         self.assertEqual(ne._settings, CONF.networking)
         self.assertEqual(ne._available_cidrs, ne._generate_available_cidrs())
-        self.assertEqual(ne._region, None)
         self.assertEqual(ne._region_name, region_name)
