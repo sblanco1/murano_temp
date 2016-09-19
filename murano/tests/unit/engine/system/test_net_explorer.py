@@ -50,5 +50,5 @@ class TestNetExplorer(base.MuranoTestCase):
         region_name = "regionOne"
         ne = net_explorer.NetworkExplorer(self._this, region_name)
         self.assertEqual(ne._settings, CONF.networking)
-        self.assertEqual(ne._available_cidrs, ne._generate_available_cidrs())
+        self.assertEqual(ne._available_cidrs, ne._generate_possible_cidrs())
         self.assertEqual(ne._region_name, region_name)
