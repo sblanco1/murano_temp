@@ -47,7 +47,6 @@ class TestTestFixture(base.MuranoTestCase):
     def test_start_env(self, execution_session):
         self.assertEqual(self.test_fixture.finish_env(), None)
 
-    @mock.patch("murano.dsl.dsl.")
     @mock.patch("murano.dsl.helpers.get_executor")
     def test_load(self, executor):
         executor.return_value = self.mock_object_store
