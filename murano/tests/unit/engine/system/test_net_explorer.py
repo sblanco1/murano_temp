@@ -48,4 +48,7 @@ class TestNetExplorer(base.MuranoTestCase):
     @mock.patch("murano.dsl.helpers.get_execution_session")
     def test_init(self, execution_session):
         region_name = "regionOne"
-        net_explorer.NetworkExplorer(self._this, region_name)
+        ne = net_explorer.NetworkExplorer(self._this, region_name)
+        self.assertEqual(ne._settings, CONF.networking)
+        self.assertEqual(ne._available_cidrs, ne._generate_available_cidrs())
+        self.assertEqual(ne._region_name, region_name)

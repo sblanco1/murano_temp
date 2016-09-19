@@ -13,6 +13,7 @@
 #    under the License.
 
 import mock
+import testtools
 import unittest
 
 from murano.dsl import dsl
@@ -40,35 +41,68 @@ class TestTestFixture(base.MuranoTestCase):
 
     @mock.patch("murano.dsl.helpers.get_execution_session")
     def test_finish_env(self, execution_session):
-        self.test_fixture.finish_env()
+        self.assertEqual(self.test_fixture.finish_env(), None)
 
     @mock.patch("murano.dsl.helpers.get_execution_session")
     def test_start_env(self, execution_session):
-        self.test_fixture.start_env()
+        self.assertEqual(self.test_fixture.finish_env(), None)
 
+    @mock.patch("murano.dsl.dsl.")
     @mock.patch("murano.dsl.helpers.get_executor")
     def test_load(self, executor):
-        model = "hello"
-        self.test_fixture.load(model)
+        executor.return_value = self.mock_object_store
+        model = "test"
+        tf_load = self.test_fixture.load(model)
+        self.assertEqual(self.test_fixture.load(model), tf_load)
 
     def test_assert_true(self):
-        expr = "7 > 3"
+        expr = (7 > 3)
         message = None
+        # Calls assertTrue in super class
         self.test_fixture.assert_true(expr, message)
 
     def test_assert_false(self):
-        expr = 3 != 3
+        expr = (3 != 3)
         message = None
+        # Calls assertFalse in super class
         self.test_fixture.assert_false(expr, message)
 
     def test_assert_in(self):
         needle = 7
         haystack = [3, 7, 8, 9, 22]
         message = None
+        # Calls assertIn in super class
         self.test_fixture.assert_in(needle, haystack, message)
 
     def test_assert_not_in(self):
         needle = 16
         haystack = [3, 7, 8, 9, 22]
         message = None
+        # Calls assertNotIn in super class
         self.test_fixture.assert_not_in(needle, haystack, message)
+
+    def test_assert_true_fails(self):
+        expr = (7 < 3)
+        message = None
+        self.assertRaises(AssertionError,
+            self.test_fixture.assert_true, expr, message)
+
+    def test_assert_false_fails(self):
+        expr = (3 == 3)
+        message = None
+        self.assertRaises(AssertionError,
+            self.test_fixture.assert_false, expr, message)
+
+    def test_assert_in_fails(self):
+        needle = 25
+        haystack = [3, 7, 8, 9, 22]
+        message = None
+        self.assertRaises(testtools.matchers._impl.MismatchError,
+            self.test_fixture.assert_in, needle, haystack, message)
+    
+    def test_assert_not_in_fails(self):
+        needle = 22
+        haystack = [3, 7, 8, 9, 22]
+        message = None
+        self.assertRaises(testtools.matchers._impl.MismatchError,
+            self.test_fixture.assert_not_in, needle, haystack, message)

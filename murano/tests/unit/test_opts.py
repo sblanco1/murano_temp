@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
+
 import mock
 from oslo_config import cfg
 
@@ -26,7 +28,9 @@ class TestOpts(base.MuranoTestCase):
         self.addCleanup(mock.patch.stopall)
 
     def test_list_opts(self):
-        opts.list_opts()
+        self.assertEqual(opts.list_opts(),
+            [(g, copy.deepcopy(o)) for g, o in opts._opt_lists])
 
     def test_list_cfapi_opts(self):
-        opts.list_cfapi_opts()
+        self.assertEqual(opts.list_cfapi_opts(),
+            [(g, copy.deepcopy(o)) for g, o in opts._cfapi_opt_lists])
