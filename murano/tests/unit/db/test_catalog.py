@@ -542,3 +542,8 @@ class CatalogDBTestCase(base.MuranoWithDBTestCase):
 
         self.assertRaises(exc.HTTPForbidden,
                           api.package_delete, package.id, self.context_2)
+
+    def test_get_categories_error(self):
+        category_names = ['cat1', 'cat2', 'cat3', 'cat4', 'cat5']
+        cat_session = None
+        self.assertRaises(exc.HTTPBadRequest, api._get_categories, category_names, cat_session)
