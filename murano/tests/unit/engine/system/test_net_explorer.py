@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import mock
+import mock:q!
 import unittest
 
 from murano.dsl import dsl
@@ -45,10 +45,13 @@ class TestNetExplorer(base.MuranoTestCase):
 
         self.addCleanup(mock.patch.stopall)
 
+    @mock.patch("murano.engine.system.net_explorer.NetworkExplorer."
+                "_get_cidrs_taken_by_router")
     @mock.patch("murano.dsl.helpers.get_execution_session")
-    def test_init(self, execution_session):
+    def test_get_available_cidr(self, execution_session, taken_cidrs):
+        taken_cidrs.return_value = []
         region_name = "regionOne"
         ne = net_explorer.NetworkExplorer(self._this, region_name)
-        self.assertEqual(ne._settings, CONF.networking)
-        self.assertEqual(ne._available_cidrs, ne._generate_possible_cidrs())
-        self.assertEqual(ne._region_name, region_name)
+        router_id = 12
+        net_id = 144
+        self.assertIsNotNone(ne.get_available_cidr(router_id, net_id))
