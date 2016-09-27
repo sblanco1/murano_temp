@@ -527,3 +527,18 @@ class CatalogDBTestCase(base.MuranoWithDBTestCase):
         category_names.reverse()
         page = api.categories_list({'sort_dir': 'desc'})
         self.assertEqual(category_names, [c.name for c in page])
+
+    def test_category_delete_error(self):
+        category_id = 12
+        self.assertRaises(exc.HTTPNotFound, api.category_delete, category_id)
+
+    def test_get_category_error(self):
+        category_id = 13
+        self.assertRaises(exc.HTTPNotFound, api.category_get, category_id)
+
+    def test_package_delete_error(self):
+        values = self._stub_package()
+        package = api.package_upload(values, self.tenant_id)
+
+        self.assertRaises(exc.HTTPForbidden,
+                          api.package_delete, package.id, self.context_2)
