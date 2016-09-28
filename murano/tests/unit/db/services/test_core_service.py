@@ -140,20 +140,20 @@ class TestCoreServices(base.MuranoTestCase):
         
     @mock.patch('murano.common.utils.TraverseHelper')
     @mock.patch('murano.db.services.environments.EnvironmentServices')
-    def test_post_put_data(self, env_services_mock, source_mock):
+    def test_post_put_delete_data(self, env_services_mock, source_mock):
         fixture = self.useFixture(et.EmptyEnvironmentFixture())
         env_services_mock.get_description.return_value = fixture.env_desc
-        source_mock = {'instances': [
-            {'id': 'ef984a74-29a4-45c0-b1dc-2ab9f075732e',
-             'type': 'io.murano.resources.LinuxInstance'},
-            {'id': 'tomcat_id', 'type': 'io.murano.apps.apache.Tomcat'},
-        ]}
         session_id = None
         ftomcat = self.useFixture(et.ApplicationTomcatFixture())
         self.assertEqual(self.core_services.post_data('any', session_id,
                          ftomcat.application_tomcat_desc,
                          '/services'), ftomcat.application_tomcat_desc)
+        self.assertTrue(source_mock.insert.called)
 
         self.assertEqual(self.core_services.put_data('any', session_id,
                          ftomcat.application_tomcat_desc,
                          '/services'), ftomcat.application_tomcat_desc)
+        self.assertTrue(source_mock.update.called)
+
+        self.core_services.delete_data('any', session_id, '/services')
+        self.assertTrue(source_mock.remove.called)
