@@ -547,3 +547,14 @@ class CatalogDBTestCase(base.MuranoWithDBTestCase):
         category_names = ['cat1', 'cat2', 'cat3', 'cat4', 'cat5']
         cat_session = None
         self.assertRaises(exc.HTTPBadRequest, api._get_categories, category_names, cat_session)
+
+    def test_authorize_package_error(self):
+        values = self._stub_package()
+        package = api.package_upload(values, self.tenant_id)
+        self.assertRaises(exc.HTTPForbidden, api._authorize_package, package,
+            self.context_2)
+        id = package.id
+        patch = self.get_change('replace', ['is_public'], False)
+        api.package_update(id, [patch], self.context)
+        self.assertRaises(exc.HTTPForbidden, api._authorize_package, package,
+            self.context_2, allow_public=True)
