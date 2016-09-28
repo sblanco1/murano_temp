@@ -376,7 +376,7 @@ class TestExecutionPlan(base.MuranoTestCase):
             self._read('application.template'),
             Loader=self.yaml_loader)
         self.assertEqual(template, self.agent._build_v1_execution_plan(template,
-                         resources))
+                         self.resources))
 
     @unittest.skip("Skip until bug/1628685 is resolved")
     def test_is_ready(self):
