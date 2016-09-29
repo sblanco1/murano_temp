@@ -17,6 +17,8 @@ from murano.db import models
 from murano.db import session
 from murano.tests.unit import base
 
+import unittest
+
 
 class TestModels(base.MuranoWithDBTestCase):
     def test_missing_blob(self):
@@ -37,3 +39,9 @@ class TestModels(base.MuranoWithDBTestCase):
         self.assertEqual(dictionary, models.CFServiceInstance().to_dict())
         self.assertEqual(dictionary, models.Task().to_dict())
         self.assertEqual(dictionary, models.Status().to_dict())
+#
+#    @unittest.skip("Skip until bug/XXXXXXX is resolved.")
+#    def test_update(self):
+#        tsm = models.TimestampMixin()
+#        value = "test"
+#        tsm.update(value)
