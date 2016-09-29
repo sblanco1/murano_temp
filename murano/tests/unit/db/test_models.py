@@ -35,3 +35,5 @@ class TestModels(base.MuranoWithDBTestCase):
         dictionary = models._MuranoBase().to_dict()
         self.assertEqual(dictionary, models.CFSpace().to_dict())
         self.assertEqual(dictionary, models.CFServiceInstance().to_dict())
+        self.assertEqual(dictionary, models.Task().to_dict())
+        self.assertEqual(dictionary, models.Status().to_dict())
