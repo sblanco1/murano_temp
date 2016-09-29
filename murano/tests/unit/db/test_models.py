@@ -30,3 +30,10 @@ class TestModels(base.MuranoWithDBTestCase):
                     "'Application', NULL)")
         loaded_e = session.get_session().query(models.Package).get(1)
         self.assertIsNone(loaded_e.supplier)
+
+    def test_to_dict(self):
+        dictionary = models._MuranoBase().to_dict()
+        self.assertEqual(dictionary, models.CFSpace().to_dict())
+        self.assertEqual(dictionary, models.CFServiceInstance().to_dict())
+        self.assertEqual(dictionary, models.Task().to_dict())
+        self.assertEqual(dictionary, models.Status().to_dict())

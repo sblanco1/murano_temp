@@ -362,7 +362,7 @@ class TestExecutionPlan(base.MuranoTestCase):
             self.assertEqual(encoded_text, body)
 
     def test_queue_name(self):
-       self.assertEqual(self.agent.queue_name(), self.agent._queue)
+        self.assertEqual(self.agent.queue_name(), self.agent._queue)
 
     def test_prepare_message(self):
         template = {'test'}
@@ -375,5 +375,10 @@ class TestExecutionPlan(base.MuranoTestCase):
         template = yamllib.load(
             self._read('application.template'),
             Loader=self.yaml_loader)
-        rtn_template = self.agent._build_v1_execution_plan(template, self.resources)
-        self.assertEqual(template, rtn_template)
+        self.assertEqual(template, self.agent._build_v1_execution_plan(template,
+                         self.resources))
+
+    @unittest.skip("Skip until bug/1628685 is resolved")
+    def test_is_ready(self):
+        timeout = 0
+        self.assertTrue(self.agent.is_ready(timeout))
