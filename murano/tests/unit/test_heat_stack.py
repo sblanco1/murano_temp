@@ -427,15 +427,3 @@ class TestHeatStack(base.MuranoTestCase):
         hs.set_files(new_files)
         self.assertEqual(hs._files, new_files)
         hs.output()
-
-    @mock.patch(CLS_NAME + '._wait_state')
-    @mock.patch(CLS_NAME + '._get_status')
-    def test_current_fail(self, status_get, wait_st):
-        status_get.return_value = 'NOT_FOUND'
-        wait_st.return_value = {}
-        heat_stack.HeatStack._create_client = mock.Mock(
-            side_effect=heat_exc.HTTPNotFound('test error'))
-        CONF.set_override('stack_tags', ['test-murano', 'murano-tag'], 'heat',
-                          enforce_type=True)
-        hs = heat_stack.HeatStack(self._this, 'test-stack', None)
-        self.assertRaises(heat_exc.HTTPNotFound, hs.current)
