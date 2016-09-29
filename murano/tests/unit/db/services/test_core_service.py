@@ -157,3 +157,11 @@ class TestCoreServices(base.MuranoTestCase):
 
         self.core_services.delete_data('any', session_id, '/services')
         self.assertTrue(source_mock.remove.called)
+
+    @mock.patch('murano.db.services.environments.EnvironmentServices')
+    def test_get_service_status(self, env_services_mock):
+        service_id = 12
+        fixture = self.useFixture(et.EmptyEnvironmentFixture())
+        env_services_mock.get_description.return_value = fixture.env_desc
+        service_status = self.core_services.get_service_status('any', service_id)
+        self.assertTrue(env_services_mock.get_status.called)
