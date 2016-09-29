@@ -55,3 +55,5 @@ class TestNetExplorer(base.MuranoTestCase):
         router_id = 12
         net_id = 144
         self.assertIsNotNone(ne.get_available_cidr(router_id, net_id))
+        self.assertTrue(taken_cidrs.called)
+        self.assertTrue(execution_session.called)
