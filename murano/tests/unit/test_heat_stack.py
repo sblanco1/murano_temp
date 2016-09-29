@@ -450,3 +450,4 @@ class TestHeatStack(base.MuranoTestCase):
 
         self.assertEqual(hs._get_status(), None)
         self.assertTrue(wait_st.called)
+        self.assertEqual(hs.output(), {})
