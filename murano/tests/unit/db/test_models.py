@@ -41,7 +41,7 @@ class TestModels(base.MuranoWithDBTestCase):
         self.assertEqual(dictionary, models.Status().to_dict())
 
     @mock.patch("oslo_utils.timeutils.utcnow")
-    def test_update(self):
+    def test_update(self, time_now):
         tsm = models.TimestampMixin()
         key = "a"
         value = 1
