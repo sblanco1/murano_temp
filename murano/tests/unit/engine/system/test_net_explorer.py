@@ -57,7 +57,7 @@ class TestNetExplorer(base.MuranoTestCase):
         self.assertEqual(ne.list_subnetworks(),
                          ne._client.list_subnets()['subnets'])
         self.assertEqual(ne.list_ports(), ne._client.list_ports()['ports'])
-        self.assertEqual(ne.list_neutron_extensions(),i
+        self.assertEqual(ne.list_neutron_extensions(),
                          ne._client.list_extensions()['extensions'])
 
     @mock.patch("murano.dsl.helpers.get_execution_session")
