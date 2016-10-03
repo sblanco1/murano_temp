@@ -14,16 +14,8 @@
 # limitations under the License.
 
 import mock
-import unittest
-
-from murano.dsl import dsl
-from murano.dsl import exceptions
-from murano.dsl import helpers
 from murano.dsl import murano_method
-from murano.dsl import murano_object
 from murano.dsl import murano_type
-
-import neutronclient.v2_0.client as nclient
 
 from oslo_config import cfg
 
@@ -39,21 +31,44 @@ class TestNetExplorer(base.MuranoTestCase):
         self.mock_class = mock.MagicMock(spec=murano_type.MuranoClass)
         self.mock_method = mock.MagicMock(spec=murano_method.MuranoMethod)
 
-        self.nclient_mock = mock.Mock()
         self._this = mock.MagicMock()
-        self._this._region = None
+        self.region_name = "testRegion"
 
         self.addCleanup(mock.patch.stopall)
 
-    @mock.patch("murano.engine.system.net_explorer.NetworkExplorer."
-                "_get_cidrs_taken_by_router")
+    @mock.patch("murano.engine.system.net_explorer.nclient")
+    @mock.patch("murano.engine.system.net_explorer.auth_utils")
     @mock.patch("murano.dsl.helpers.get_execution_session")
-    def test_get_available_cidr(self, execution_session, taken_cidrs):
-        taken_cidrs.return_value = []
-        region_name = "regionOne"
-        ne = net_explorer.NetworkExplorer(self._this, region_name)
+    def test_get_available_cidr(self, execution_session, 
+                                mock_authentication, mock_nclient):
+        ne = net_explorer.NetworkExplorer(self._this, self.region_name)
         router_id = 12
         net_id = 144
         self.assertIsNotNone(ne.get_available_cidr(router_id, net_id))
-        self.assertTrue(taken_cidrs.called)
         self.assertTrue(execution_session.called)
+
+    @mock.patch("murano.engine.system.net_explorer.nclient")
+    @mock.patch("murano.engine.system.net_explorer.auth_utils")
+    @mock.patch("murano.dsl.helpers.get_execution_session")
+    def test_list(self, execution_session, mock_authentication, mock_nclient):
+        ne = net_explorer.NetworkExplorer(self._this, self.region_name)
+        self.assertEqual(ne.list_networks(),
+                         ne._client.list_networks()['networks'])
+        self.assertEqual(ne.list_subnetworks(),
+                         ne._client.list_subnets()['subnets'])
+        self.assertEqual(ne.list_ports(), ne._client.list_ports()['ports'])
+        self.assertEqual(ne.list_neutron_extensions(),
+                         ne._client.list_extensions()['extensions'])
+
+    @mock.patch("murano.dsl.helpers.get_execution_session")
+    def test_get_dns(self, execution_session):
+        ne = net_explorer.NetworkExplorer(self._this, self.region_name)
+        self.assertEqual(ne.get_default_dns(), ne._settings.default_dns)
+
+    @mock.patch("murano.engine.system.net_explorer.nclient")
+    @mock.patch("murano.engine.system.net_explorer.auth_utils")
+    @mock.patch("murano.dsl.helpers.get_execution_session")
+    def test_get_router_error(self, execution_session,
+                              mock_authentication, mock_nclient):
+        ne = net_explorer.NetworkExplorer(self._this, self.region_name)
+        self.assertRaises(KeyError, ne.get_default_router)

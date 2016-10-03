@@ -12,6 +12,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 import datetime as dt
+import mock
+import uuid
 
 from oslo_utils import timeutils
 
@@ -65,3 +67,12 @@ class TestEnvironmentServices(base.MuranoWithDBTestCase):
         )
 
         self.assertEqual(expected_status, actual_status)
+
+    @mock.patch("murano.db.services.environments.auth_utils")
+    def test_get_network_driver(self, mock_authentication):
+        self.tenant_id = str(uuid.uuid4())
+        self.context = utils.dummy_context(tenant_id=self.tenant_id)
+
+        driver_context = self.environments.get_network_driver(self.context)
+        self.assertEqual(driver_context, "neutron")
+        

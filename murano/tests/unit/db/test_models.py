@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
+
 from murano.db import models
 from murano.db import session
 from murano.tests.unit import base
@@ -37,3 +39,15 @@ class TestModels(base.MuranoWithDBTestCase):
         self.assertEqual(dictionary, models.CFServiceInstance().to_dict())
         self.assertEqual(dictionary, models.Task().to_dict())
         self.assertEqual(dictionary, models.Status().to_dict())
+
+    @mock.patch("oslo_utils.timeutils.utcnow")
+    def test_update(self):
+        tsm = models.TimestampMixin()
+        key = "a"
+        value = 1
+        tsm.__setitem__(key, value)
+        self.assertTrue(time_now.called)
+        time_now.reset_mock()
+        values = {"b": 2, "c": 3}
+        tsm.update(values)
+        self.assertTrue(time_now.called)

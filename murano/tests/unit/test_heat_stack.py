@@ -427,3 +427,27 @@ class TestHeatStack(base.MuranoTestCase):
         hs.set_files(new_files)
         self.assertEqual(hs._files, new_files)
         hs.output()
+
+    @mock.patch(CLS_NAME + '._wait_state')
+    def test_get_hot_status(self, wait_st):
+        wait_st.return_value = {}
+        CONF.set_override('stack_tags', ['test-murano', 'murano-tag'], 'heat',
+                          enforce_type=True)
+        hs = heat_stack.HeatStack('test-stack', None)
+        hs._description = None
+        hs._template = {'resources': {'test': 1}}
+        hs._files = {}
+        hs._hot_environment = ''
+        hs._parameters = {}
+        hs._applied = False
+        hs._tags = ','.join(CONF.heat.stack_tags)
+        hs.push()
+
+        expected_template = {
+            'heat_template_version': '2013-05-23',
+            'resources': {'test': 1}
+        }
+
+        self.assertEqual(hs._get_status(), None)
+        self.assertTrue(wait_st.called)
+        self.assertEqual(hs.output(), {})
