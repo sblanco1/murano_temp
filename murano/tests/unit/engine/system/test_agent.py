@@ -14,6 +14,7 @@
 
 import os
 import tempfile
+import unittest
 
 import mock
 from oslo_serialization import base64
