@@ -41,11 +41,13 @@ class TestTestFixture(base.MuranoTestCase):
 
     @mock.patch("murano.dsl.helpers.get_execution_session")
     def test_finish_env(self, execution_session):
-        self.assertEqual(self.test_fixture.finish_env(), None)
+        self.assertIsNone(self.test_fixture.finish_env())
+        self.assertTrue(execution_session.called)
 
     @mock.patch("murano.dsl.helpers.get_execution_session")
     def test_start_env(self, execution_session):
-        self.assertEqual(self.test_fixture.finish_env(), None)
+        self.assertIsNone(self.test_fixture.start_env())
+        self.assertTrue(execution_session.called)
 
     @mock.patch("murano.dsl.helpers.get_executor")
     def test_load(self, executor):
