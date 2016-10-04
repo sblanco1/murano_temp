@@ -101,3 +101,32 @@ class TestEnvironmentServices(base.MuranoWithDBTestCase):
         session.add(session_1)
         session.flush()
 
+        expected_status = states.EnvironmentStatus.DEPLOY_FAILURE
+        self.assertEqual(expected_status, self.env_services.get_status(
+            self.environment.id))
+
+    def test_delete_failure_get_description(self):
+        session = db_session.get_session()
+
+        session.add(self.environment)
+
+        now = timeutils.utcnow()
+
+        session_1 = models.Session(
+            environment=self.environment, user_id='test_user_id_1',
+            version=OLD_VERSION,
+            state=states.SessionState.DELETE_FAILURE,
+            updated=now, description={}
+        )
+
+        session.add(session_1)
+        session.flush()
+
+        expected_status = states.EnvironmentStatus.DELETE_FAILURE
+        self.assertEqual(expected_status, self.env_services.get_status(
+            self.environment.id))
+
+        env_id = self.environment.id
+        description = self.env_services.get_environment_description(self.environment.id, session_id=None, inner=True)
+
+        self.assertEqual(description, unit.query(models.Environment).get(session.env_id).description)
