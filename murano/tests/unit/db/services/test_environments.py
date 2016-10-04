@@ -76,3 +76,27 @@ class TestEnvironmentServices(base.MuranoWithDBTestCase):
         driver_context = self.environments.get_network_driver(self.context)
         self.assertEqual(driver_context, "neutron")
         
+    def test_get_status(self):
+        OLD_VERSION = 0
+        LATEST_VERSION = 1
+
+        session = db_session.get_session()
+
+        environment = models.Environment(
+            name='test_environment', tenant_id='test_tenant_id',
+            version=LATEST_VERSION
+        )
+        session.add(environment)
+
+        now = timeutils.utcnow()
+
+        session_1 = models.Session(
+            environment=environment, user_id='test_user_id_1',
+            version=OLD_VERSION,
+            state=states.SessionState.DEPLOY_FAILURE,
+            updated=now, description={}
+        )
+
+        session.add(session_1)
+        session.flush()
+
