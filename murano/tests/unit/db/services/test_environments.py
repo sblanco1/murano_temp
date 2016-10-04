@@ -22,6 +22,7 @@ from murano.db.services import environments
 from murano.db import session as db_session
 from murano.services import states
 from murano.tests.unit import base
+from murano.tests.unit import utils
 
 
 class TestEnvironmentServices(base.MuranoWithDBTestCase):
