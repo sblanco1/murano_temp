@@ -58,4 +58,6 @@ class TestMistralClient(base.MuranoTestCase):
     def test_upload(self):
         mc = workflowclient.MistralClient(self._this, 'regionOne')
         definition = "test"
-        self.assertEqual(mc.upload(definition), None)
+        self.assertIsNone(mc.upload(definition))
+        self.assertTrue(workflowclient.MistralClient.
+                        _client.workflows.create.called)
