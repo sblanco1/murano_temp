@@ -15,11 +15,10 @@
 
 import mock
 
-from murano.dsl import murano_method
-from murano.dsl import murano_type
-
 from oslo_config import cfg
 
+from murano.dsl import murano_method
+from murano.dsl import murano_type
 from murano.engine.system import net_explorer
 from murano.tests.unit import base
 
@@ -40,7 +39,7 @@ class TestNetExplorer(base.MuranoTestCase):
     @mock.patch("murano.engine.system.net_explorer.nclient")
     @mock.patch("murano.engine.system.net_explorer.auth_utils")
     @mock.patch("murano.dsl.helpers.get_execution_session")
-    def test_get_available_cidr(self, execution_session, 
+    def test_get_available_cidr(self, execution_session,
                                 mock_authentication, mock_nclient):
         ne = net_explorer.NetworkExplorer(self._this, self.region_name)
         router_id = 12
@@ -86,7 +85,8 @@ class TestNetExplorer(base.MuranoTestCase):
                                         mock_authentication, mock_nclient):
         ne = net_explorer.NetworkExplorer(self._this, self.region_name)
         net_id = 144
-        self.assertEqual(ne.get_external_network_id_for_network(net_id), net_id)
+        self.assertEqual(net_id,
+                         ne.get_external_network_id_for_network(net_id))
 
     @mock.patch("murano.engine.system.net_explorer.nclient")
     @mock.patch("murano.engine.system.net_explorer.auth_utils")
@@ -95,4 +95,4 @@ class TestNetExplorer(base.MuranoTestCase):
                                   mock_authentication, mock_nclient):
         ne = net_explorer.NetworkExplorer(self._this, self.region_name)
         router_id = None
-        self.assertEqual(ne._get_cidrs_taken_by_router(router_id), [])
+        self.assertEqual([], ne._get_cidrs_taken_by_router(router_id))
