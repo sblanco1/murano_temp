@@ -38,11 +38,12 @@ class TestEnvironmentServices(base.MuranoWithDBTestCase):
 
         self.env_services = environments.EnvironmentServices()
 
-
     def test_environment_ready_if_last_session_deployed_after_failed(self):
         """Test environment ready status
+
         If last session was deployed successfully and other session
         was failed - environment must have status "ready".
+
         Bug: #1413260
         """
 
@@ -83,7 +84,6 @@ class TestEnvironmentServices(base.MuranoWithDBTestCase):
         self.assertEqual(driver_context, "neutron")
 
     def test_get_status(self):
-
         session = db_session.get_session()
 
         session.add(self.environment)
@@ -126,6 +126,8 @@ class TestEnvironmentServices(base.MuranoWithDBTestCase):
             self.environment.id))
 
         env_id = self.environment.id
-        description = self.env_services.get_environment_description(self.environment.id, session_id=None, inner=True)
-
-        self.assertEqual(description, unit.query(models.Environment).get(session.env_id).description)
+        description = (self.env_services.
+                       get_environment_description(env_id,
+                                                   session_id=None,
+                                                   inner=False))
+        self.assertEqual({}, description)
