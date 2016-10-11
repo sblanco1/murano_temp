@@ -14,10 +14,7 @@
 
 import mock
 
-from murano.dsl import exceptions
-from murano.dsl import murano_method
 from murano.dsl import murano_object
-from murano.dsl import murano_type
 from murano.engine.system import metadef_browser
 from murano.tests.unit import base
 
@@ -41,7 +38,8 @@ class TestMetadefBrowser(base.MuranoTestCase):
         self.metadef = metadef_browser.MetadefBrowser(self.this)
         self.assertIsNotNone(self.metadef.get_objects(namespace))
         self.assertTrue(execution_session.called)
-        self.assertTrue(metadef_browser.MetadefBrowser._client.metadefs_object.list.called)
+        self.assertTrue(metadef_browser.MetadefBrowser.
+                        _client.metadefs_object.list.called)
 
     @mock.patch("murano.dsl.helpers.get_execution_session")
     def test_get_namespaces(self, execution_session):
@@ -49,4 +47,5 @@ class TestMetadefBrowser(base.MuranoTestCase):
         resource_type = self.mock_object
         self.assertIsNotNone(self.metadef.get_namespaces(resource_type))
         self.assertTrue(execution_session.called)
-        self.assertTrue(metadef_browser.MetadefBrowser._client.metadefs_namespace.list.called)
+        self.assertTrue(metadef_browser.MetadefBrowser.
+                        _client.metadefs_namespace.list.called)
