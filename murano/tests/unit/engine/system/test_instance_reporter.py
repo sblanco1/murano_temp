@@ -15,13 +15,10 @@
 import mock
 
 from murano.db import models
-from murano.dsl import murano_type
-from murano.dsl import object_store
 from murano.engine.system import instance_reporter
 from murano.tests.unit import base
-from murano.tests.unit import utils
 
-LATEST_VERSION=1
+LATEST_VERSION = 1
 
 
 class TestInstanceReporter(base.MuranoTestCase):
