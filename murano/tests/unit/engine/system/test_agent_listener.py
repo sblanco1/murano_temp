@@ -12,35 +12,36 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import os
-import tempfile
-
 import mock
-from oslo_serialization import base64
-import yaml as yamllib
 
-from murano.dsl import murano_object
-from murano.dsl import murano_type
-from murano.dsl import object_store
 from murano.engine.system import agent_listener
-from murano.engine.system import resource_manager
 from murano.tests.unit import base
 
 
 class TestExecutionPlan(base.MuranoTestCase):
     def setUp(self):
         super(TestExecutionPlan, self).setUp()
+
         name = "test"
+        results_queue = str('-execution-results-%s' % name.lower())
         self.agent = agent_listener.AgentListener(name)
+        self.assertEqual({}, self.agent._subscriptions)
+        self.assertEqual(results_queue, self.agent._results_queue)
+        self.assertTrue(self.agent._enabled)
+        self.assertIsNone(self.agent._receive_thread)
+
         self.addCleanup(mock.patch.stopall)
 
     def test_queue_name(self):
         self.assertEqual(self.agent._results_queue, self.agent.queue_name())
 
-    @mock.patch("murano.engine.system.agent_listener.dsl.get_execution_session")
-    def test_subscribe_unsubscribe(self, execution_session):
+    @mock.patch("murano.engine.system.agent_listener.dsl.get_this")
+    @mock.patch("murano.engine.system."
+                "agent_listener.dsl.get_execution_session")
+    def test_subscribe_unsubscribe(self, execution_session, mock_this):
         self.agent.subscribe('msg_id', 'event')
         self.assertIn('msg_id', self.agent._subscriptions)
         self.agent.unsubscribe('msg_id')
         self.assertNotIn('msg_id', self.agent._subscriptions)
         self.assertTrue(execution_session.called)
+        self.assertTrue(mock_this.called)
